@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "e9de8b24-2cbc-4e71-96c6-35bcc8adeccc",
     "name": "Lacoste — Order Management API",
-    "description": "Complete API test suite for the Order Management feature.\n\nCovers: Order Search, Release, Cancel, Ship, Return, and Short actions.\n\nEnvironment variables required:\n- `baseUrl` → API base URL (e.g. https://postman-echo.com)\n- `orderId` → e.g. GFR35150_12356\n- `country` → e.g. FR\n\nAuthor: Hamza BOUNAAMANE",
+    "description": "Complete API test suite for the Order Management feature.\n\nCovers: Order Search, Release, Cancel, Ship, Return, and Short actions.\n\nEnvironment variables required:\n- `baseUrl` → API base URL (e.g. https://postman-echo.com)\n- `orderId` → e.g. GFR35150_12356\n- `country` → e.g. FR\n\nAuthor: Mohamed KADRI",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "27424896"
   },
