@@ -63,7 +63,7 @@ Side drawer allows access to: WebView, QR Code Scanner, GPS Map, Canvas Pad. Als
 **Scope:** Pure business logic, isolated from UI and network.
 
 Key test targets:
-- `Credentials.verifyCredentials()` — all user profiles including edge cases
+- `Credentials.verifyCredentials()` all user profiles including edge cases
 - `ShoppingCart` model: `addItem()`, `removeItem()`, `resetCart()`, state integrity
 - Tax calculator
 - Deep link parser: valid and malformed URIs
