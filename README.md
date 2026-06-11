@@ -7,14 +7,14 @@
 ```
 lacoste-qa-test/
 │
-├── 📂 web-tests/
+├── 📂 01.web-tests/
 │   └── test-cases.md          ← 31 prioritized test cases (P0/P1/P2)
 │
-├── 📂 postman/
+├── 📂 02.postman/
 │   ├── lacoste-order-management.postman_collection.json   ← Full API test suite
 │   └── lacoste-qa-local.postman_environment.json         ← Environment variables
 │
-├── 📂 mobile-tests/
+├── 📂 03.mobile-tests/
 │   └── mobile-strategy.md     ← App analysis, user journeys, test strategy
 │
 └── README.md                  ← You are here
