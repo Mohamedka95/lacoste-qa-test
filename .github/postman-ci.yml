@@ -1,0 +1,35 @@
+name: Postman API Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  postman-tests:
+    name: Run Postman Collection (Newman)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run Postman collection
+        run: |
+          newman run postman/lacoste-order-management.postman_collection.json \
+            --environment postman/lacoste-qa-local.postman_environment.json \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export postman/newman-report.html \
+            --delay-request 200 \
+            --bail
+
+      - name: Upload Newman HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman-report
+          path: postman/newman-report.html

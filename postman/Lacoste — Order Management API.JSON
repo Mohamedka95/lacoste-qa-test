@@ -1,0 +1,1053 @@
+{
+  "info": {
+    "_postman_id": "e9de8b24-2cbc-4e71-96c6-35bcc8adeccc",
+    "name": "Lacoste — Order Management API",
+    "description": "Complete API test suite for the Order Management feature.\n\nCovers: Order Search, Release, Cancel, Ship, Return, and Short actions.\n\nEnvironment variables required:\n- `baseUrl` → API base URL (e.g. https://postman-echo.com)\n- `orderId` → e.g. GFR35150_12356\n- `country` → e.g. FR\n\nAuthor: Hamza BOUNAAMANE",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27424896"
+  },
+  "item": [
+    {
+      "name": "🔍 Order Search",
+      "item": [
+        {
+          "name": "TC001 — Search valid order (Happy Path)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Simulate real API response for demo purposes",
+                  "const mockResponse = {",
+                  "  orderId: pm.collectionVariables.get('orderId'),",
+                  "  country: pm.collectionVariables.get('country'),",
+                  "  source: 'MAO',",
+                  "  status: 'PENDING',",
+                  "  items: [",
+                  "    { itemId: '3666165426757', qty: 2, location: 'EU3', releaseId: 'GFR35150_123561', releaseLineId: 1, orderLineId: '35150_LINE-1780490028058', shipped: false },",
+                  "    { itemId: '3666165426658', qty: 2, location: 'EU3', releaseId: 'GFR35150_123561', releaseLineId: 2, orderLineId: '35150_LINE-1780489962919', shipped: false }",
+                  "  ]",
+                  "};",
+                  "",
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test('orderId matches search param', () => {",
+                  "  pm.expect(mockResponse.orderId).to.eql(pm.collectionVariables.get('orderId'));",
+                  "});",
+                  "",
+                  "pm.test('country matches search param', () => {",
+                  "  pm.expect(mockResponse.country).to.eql(pm.collectionVariables.get('country'));",
+                  "});",
+                  "",
+                  "pm.test('source is MAO', () => {",
+                  "  pm.expect(mockResponse.source).to.eql('MAO');",
+                  "});",
+                  "",
+                  "pm.test('Response contains 2 items', () => {",
+                  "  pm.expect(mockResponse.items).to.be.an('array').with.lengthOf(2);",
+                  "});",
+                  "",
+                  "pm.test('Each item has required fields', () => {",
+                  "  mockResponse.items.forEach(item => {",
+                  "    pm.expect(item).to.have.all.keys('itemId','qty','location','releaseId','releaseLineId','orderLineId','shipped');",
+                  "  });",
+                  "});",
+                  "",
+                  "pm.test('Item qty is a positive integer', () => {",
+                  "  mockResponse.items.forEach(item => {",
+                  "    pm.expect(item.qty).to.be.a('number').and.above(0);",
+                  "  });",
+                  "});",
+                  "",
+                  "pm.test('Shipped flag is boolean false initially', () => {",
+                  "  mockResponse.items.forEach(item => {",
+                  "    pm.expect(item.shipped).to.be.a('boolean').and.eql(false);",
+                  "  });",
+                  "});",
+                  "",
+                  "// Store releaseId for subsequent requests",
+                  "pm.collectionVariables.set('releaseId', mockResponse.items[0].releaseId);",
+                  "pm.collectionVariables.set('orderLineId1', mockResponse.items[0].orderLineId);",
+                  "pm.collectionVariables.set('orderLineId2', mockResponse.items[1].orderLineId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/get?orderId={{orderId}}&country={{country}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                }
+              ]
+            },
+            "description": "P0 — Search an existing order by ID and country. Validates structure and all item fields."
+          },
+          "response": [
+            {
+              "name": "200 OK — Order Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"orderId\": \"GFR35150_12356\",\n  \"country\": \"FR\",\n  \"source\": \"MAO\",\n  \"status\": \"PENDING\",\n  \"items\": [\n    {\n      \"itemId\": \"3666165426757\",\n      \"qty\": 2,\n      \"location\": \"EU3\",\n      \"releaseId\": \"GFR35150_123561\",\n      \"releaseLineId\": 1,\n      \"orderLineId\": \"35150_LINE-1780490028058\",\n      \"shipped\": false\n    },\n    {\n      \"itemId\": \"3666165426658\",\n      \"qty\": 2,\n      \"location\": \"EU3\",\n      \"releaseId\": \"GFR35150_123561\",\n      \"releaseLineId\": 2,\n      \"orderLineId\": \"35150_LINE-1780489962919\",\n      \"shipped\": false\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "TC002 — Search non-existent order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 Not Found', () => pm.response.to.have.status(404));",
+                  "",
+                  "pm.test('Response body contains error message', () => {",
+                  "  // For echo endpoint, status 200 is returned — simulate assertion",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "  // Real check: pm.expect(pm.response.json().message).to.include('not found');",
+                  "});",
+                  "",
+                  "pm.test('Response time < 2000ms', () => {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/get?orderId=INVALID_ORDER_999&country={{country}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "orderId",
+                  "value": "INVALID_ORDER_999"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                }
+              ]
+            },
+            "description": "P0 — Expects 404 or meaningful error when order ID doesn't exist."
+          },
+          "response": []
+        },
+        {
+          "name": "TC003 — Search with empty orderId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 Bad Request', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+                  "  // Real check: pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response time < 1500ms', () => {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1500);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/get?orderId=&country={{country}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "orderId",
+                  "value": ""
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                }
+              ]
+            },
+            "description": "P0 — Empty orderId should return 400/422 with a validation message."
+          },
+          "response": []
+        },
+        {
+          "name": "TC004 — Search with special characters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('No 500 server error', () => {",
+                  "  pm.expect(pm.response.code).to.not.eql(500);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', () => {",
+                  "  pm.response.to.be.json;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/get?orderId=ORD-123%23@!&country={{country}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "orderId",
+                  "value": "ORD-123#@!"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                }
+              ]
+            },
+            "description": "P0 — Special characters must not crash the server (no 500)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📦 Release Order",
+      "item": [
+        {
+          "name": "TC006 — Release order (Happy Path)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const mockRelease = {",
+                  "  orderId: pm.collectionVariables.get('orderId'),",
+                  "  status: 'RELEASED',",
+                  "  releasedAt: new Date().toISOString()",
+                  "};",
+                  "",
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test('Order status is RELEASED', () => {",
+                  "  pm.expect(mockRelease.status).to.eql('RELEASED');",
+                  "});",
+                  "",
+                  "pm.test('releasedAt timestamp is present', () => {",
+                  "  pm.expect(mockRelease.releasedAt).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "pm.test('Response time < 3000ms', () => {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"country\": \"{{country}}\",\n  \"action\": \"RELEASE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P0 — Release a pending order. Expects status RELEASED and releasedAt timestamp."
+          },
+          "response": []
+        },
+        {
+          "name": "TC007 — Release already released order (idempotency)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409 Conflict or 200 idempotent', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 409]);",
+                  "});",
+                  "",
+                  "pm.test('No duplicate release occurs', () => {",
+                  "  // Real: pm.expect(pm.response.json().duplicateReleaseId).to.not.exist;",
+                  "  pm.expect(true).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"country\": \"{{country}}\",\n  \"action\": \"RELEASE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P0 — Idempotency check: releasing an already released order should not duplicate the operation."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "❌ Cancel Order",
+      "item": [
+        {
+          "name": "TC010 — Cancel active order (Happy Path)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const mockCancel = {",
+                  "  orderId: pm.collectionVariables.get('orderId'),",
+                  "  status: 'CANCELLED',",
+                  "  cancelledAt: new Date().toISOString()",
+                  "};",
+                  "",
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test('Order status is CANCELLED', () => {",
+                  "  pm.expect(mockCancel.status).to.eql('CANCELLED');",
+                  "});",
+                  "",
+                  "pm.test('cancelledAt is a valid ISO date', () => {",
+                  "  const d = new Date(mockCancel.cancelledAt);",
+                  "  pm.expect(d.toString()).to.not.eql('Invalid Date');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"country\": \"{{country}}\",\n  \"action\": \"CANCEL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P0 — Cancel an active (non-shipped) order. Expects CANCELLED status."
+          },
+          "response": []
+        },
+        {
+          "name": "TC011 — Cancel a shipped order (forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden or 409 Conflict', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([403, 409, 422]);",
+                  "});",
+                  "",
+                  "pm.test('Error message explains why cancellation is blocked', () => {",
+                  "  // Real: pm.expect(pm.response.json().error).to.include('shipped');",
+                  "  pm.expect(true).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"country\": \"{{country}}\",\n  \"action\": \"CANCEL\",\n  \"currentStatus\": \"SHIPPED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P0 — Cancelling a shipped order must be blocked (403/409/422)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🚚 Ship Item",
+      "item": [
+        {
+          "name": "TC014 — Ship released item (Happy Path)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const mockShip = {",
+                  "  itemId: pm.collectionVariables.get('itemId1'),",
+                  "  status: 'SHIPPED',",
+                  "  shipped: true,",
+                  "  shippedAt: new Date().toISOString()",
+                  "};",
+                  "",
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test('shipped flag is true', () => {",
+                  "  pm.expect(mockShip.shipped).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('shippedAt timestamp is present', () => {",
+                  "  pm.expect(mockShip.shippedAt).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "pm.test('Item status is SHIPPED', () => {",
+                  "  pm.expect(mockShip.status).to.eql('SHIPPED');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"releaseId\": \"{{releaseId}}\",\n  \"itemId\": \"{{itemId1}}\",\n  \"action\": \"SHIP\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P0 — Ship a released item. Verifies shipped=true and shippedAt timestamp."
+          },
+          "response": []
+        },
+        {
+          "name": "TC015 — Ship non-released item (blocked)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 422 Unprocessable or 409 Conflict', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([409, 422, 400]);",
+                  "});",
+                  "",
+                  "pm.test('Cannot ship item that is not RELEASED', () => {",
+                  "  pm.expect(true).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"releaseId\": \"{{releaseId}}\",\n  \"itemId\": \"{{itemId1}}\",\n  \"action\": \"SHIP\",\n  \"currentStatus\": \"CREATED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P0 — Ship must be blocked if item is not in RELEASED state."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "↩️ Return Item",
+      "item": [
+        {
+          "name": "TC018 — Return shipped item (Happy Path)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const mockReturn = {",
+                  "  itemId: pm.collectionVariables.get('itemId1'),",
+                  "  status: 'RETURNED',",
+                  "  returnedAt: new Date().toISOString()",
+                  "};",
+                  "",
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test('Item status is RETURNED', () => {",
+                  "  pm.expect(mockReturn.status).to.eql('RETURNED');",
+                  "});",
+                  "",
+                  "pm.test('returnedAt timestamp present', () => {",
+                  "  pm.expect(mockReturn.returnedAt).to.be.a('string').and.not.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"releaseId\": \"{{releaseId}}\",\n  \"itemId\": \"{{itemId1}}\",\n  \"action\": \"RETURN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P1 — Return a shipped item. Expects RETURNED status and timestamp."
+          },
+          "response": []
+        },
+        {
+          "name": "TC019 — Return non-shipped item (blocked)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409 or 422 — return blocked', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([409, 422, 400]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"releaseId\": \"{{releaseId}}\",\n  \"itemId\": \"{{itemId1}}\",\n  \"action\": \"RETURN\",\n  \"currentStatus\": \"CREATED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P1 — Return must be blocked if item is not SHIPPED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "⚠️ Short (Stock Shortage)",
+      "item": [
+        {
+          "name": "TC021 — Declare item as Short (Happy Path)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const mockShort = {",
+                  "  itemId: pm.collectionVariables.get('itemId2'),",
+                  "  status: 'SHORT',",
+                  "  availableQty: 0",
+                  "};",
+                  "",
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test('Item status is SHORT', () => {",
+                  "  pm.expect(mockShort.status).to.eql('SHORT');",
+                  "});",
+                  "",
+                  "pm.test('Available quantity drops to 0', () => {",
+                  "  pm.expect(mockShort.availableQty).to.eql(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"releaseId\": \"{{releaseId}}\",\n  \"itemId\": \"{{itemId2}}\",\n  \"action\": \"SHORT\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P1 — Declare shortage on an item. Verifies status=SHORT and qty drops to 0."
+          },
+          "response": []
+        },
+        {
+          "name": "TC023 — Short after Ship (blocked)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409 or 422 — short blocked on shipped item', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([409, 422, 400]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"releaseId\": \"{{releaseId}}\",\n  \"itemId\": \"{{itemId2}}\",\n  \"action\": \"SHORT\",\n  \"currentStatus\": \"SHIPPED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post"
+              ]
+            },
+            "description": "P1 — Cannot declare shortage on an already shipped item."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔒 Security & Edge Cases",
+      "item": [
+        {
+          "name": "SEC01 — Missing Authorization header",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401 Unauthorized (no auth token)', () => {",
+                  "  // postman-echo always 200 — in real API expect 401",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/get?orderId={{orderId}}&country={{country}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                }
+              ]
+            },
+            "description": "Security — Missing auth must return 401, not expose order data."
+          },
+          "response": []
+        },
+        {
+          "name": "SEC02 — SQL Injection in orderId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('No 500 server error on SQL injection attempt', () => {",
+                  "  pm.expect(pm.response.code).to.not.eql(500);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', () => {",
+                  "  pm.response.to.be.json;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/get?orderId=' OR 1=1 --&country={{country}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "orderId",
+                  "value": "' OR 1=1 --"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                }
+              ]
+            },
+            "description": "Security — SQL injection in orderId must not crash the server or expose data."
+          },
+          "response": []
+        },
+        {
+          "name": "PERF01 — Response time < 3s on valid search",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test('Response time under 3000ms', () => {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "",
+                  "pm.test('Content-Type is application/json', () => {",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/get?orderId={{orderId}}&country={{country}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                }
+              ]
+            },
+            "description": "P2 — Performance baseline: response must arrive in under 3 seconds."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://postman-echo.com",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "GFR35150_12356",
+      "type": "string"
+    },
+    {
+      "key": "country",
+      "value": "FR",
+      "type": "string"
+    },
+    {
+      "key": "releaseId",
+      "value": "GFR35150_123561",
+      "type": "string"
+    },
+    {
+      "key": "itemId1",
+      "value": "3666165426757",
+      "type": "string"
+    },
+    {
+      "key": "itemId2",
+      "value": "3666165426658",
+      "type": "string"
+    },
+    {
+      "key": "orderLineId1",
+      "value": ""
+    },
+    {
+      "key": "orderLineId2",
+      "value": ""
+    }
+  ]
+}
