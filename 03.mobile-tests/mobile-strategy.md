@@ -34,7 +34,6 @@ The app implements a linear e-commerce checkout funnel in 7 phases:
 
 **Journey 3 Problem User (Bug Regression)**  
 `problem_user` exposes pre-programmed bugs:
-- Add/remove cart behavior fails for items with specific ID parity
 - Subtotals double unexpectedly on the overview screen
 - "About" link returns HTTP 404
 - Cart does not reset after order completion
