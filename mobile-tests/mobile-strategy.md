@@ -65,10 +65,9 @@ Side drawer allows access to: WebView, QR Code Scanner, GPS Map, Canvas Pad. Als
 Key test targets:
 - `Credentials.verifyCredentials()` — all user profiles including edge cases
 - `ShoppingCart` model: `addItem()`, `removeItem()`, `resetCart()`, state integrity
-- Tax calculator: `subtotal × 1.08`, boundary values (0.00, 0.01, large amounts)
+- Tax calculator
 - Deep link parser: valid and malformed URIs
 
-**Tools:** Jest + React Native Testing Library
 
 ---
 
@@ -82,13 +81,11 @@ Key test targets:
 - Global cart reset from drawer → badge clears immediately
 - `problem_user` state propagation across screens
 
-**Tools:** Jest + React Native Testing Library (integration mode)
 
 ---
 
 ### Test Level 3 — Functional / End-to-End Testing
 
-**Scope:** Full automated regression against the graphical UI on real devices and emulators.
 
 Critical E2E flows executed on **both platforms** (iOS + Android):
 
@@ -105,8 +102,6 @@ Critical E2E flows executed on **both platforms** (iOS + Android):
 | Catalog sort + layout toggle | `standard_user` | Medium |
 | WebView / QR / GPS modules | `standard_user` | Medium |
 
-**Primary tool:** Appium + WebDriverIO  
-**Alternative for pure React Native:** Detox (faster, no appium server needed)
 
 ---
 
@@ -121,11 +116,6 @@ Critical E2E flows executed on **both platforms** (iOS + Android):
 - iOS: 14, 16, 17 (iPhone SE, 13, 15, 15 Pro)
 - Android: 9, 11, 13 (Pixel 6, Samsung Galaxy S22, mid-range device)
 - Tablet layouts (iPad, Android 10")
-
-#### Accessibility
-- All interactive elements must have unique `testID` attributes
-- Minimum touch target: 44×44pt (iOS HIG)
-- Screen reader compatibility (VoiceOver / TalkBack): login and cart flows
 
 #### Security
 - Credentials not stored in plaintext in `SyncStorage`
@@ -181,59 +171,11 @@ Critical E2E flows executed on **both platforms** (iOS + Android):
 ## 6. QA Deliverables
 
 1. **Test Plan** — global strategic documentation covering web and mobile
-2. **Automation Codebase** — Appium scripts (iOS/Android regression) + Jest unit suites
 3. **Execution Summary Report** — pass/fail stats, screenshots, debug logs
 4. **Defect Tickets** — Jira logs with reproduction steps, actual vs expected, environment
 5. **QA Metrics Dashboard** — coverage trends, pass rates, flakiness tracking
 
 ---
-
-## 7. Sample Appium Test Structure
-
-```javascript
-// E2E: Happy Path Purchase — standard_user
-describe('Standard Purchase Flow', () => {
-  
-  before(async () => {
-    await driver.launchApp();
-  });
-
-  it('should login successfully', async () => {
-    const usernameField = await driver.$('~test-Username');
-    const passwordField = await driver.$('~test-Password');
-    const loginButton   = await driver.$('~test-LOGIN');
-
-    await usernameField.setValue('standard_user');
-    await passwordField.setValue('secret_sauce');
-    await loginButton.click();
-
-    const catalog = await driver.$('~test-PRODUCTS');
-    await expect(catalog).toBeDisplayed();
-  });
-
-  it('should add first product to cart', async () => {
-    const addToCart = await driver.$('~test-ADD TO CART-Sauce Labs Backpack');
-    await addToCart.click();
-
-    const badge = await driver.$('~test-Cart-Item-Badge');
-    await expect(badge).toHaveText('1');
-  });
-
-  it('should complete checkout', async () => {
-    await driver.$('~test-Cart').click();
-    await driver.$('~test-CHECKOUT').click();
-
-    await driver.$('~test-First Name').setValue('Hamza');
-    await driver.$('~test-Last Name').setValue('Bounaamane');
-    await driver.$('~test-Zip/Postal Code').setValue('59140');
-    await driver.$('~test-CONTINUE').click();
-
-    const finishBtn = await driver.$('~test-FINISH');
-    await expect(finishBtn).toBeDisplayed();
-    await finishBtn.click();
-
-    const confirmation = await driver.$('~test-CHECKOUT: COMPLETE!');
-    await expect(confirmation).toBeDisplayed();
   });
 });
 ```
