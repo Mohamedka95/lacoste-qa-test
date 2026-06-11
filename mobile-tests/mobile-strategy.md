@@ -26,20 +26,20 @@ The app implements a linear e-commerce checkout funnel in 7 phases:
 
 ### Key User Journeys
 
-**Journey 1 — Standard Purchase (Happy Path)**  
+**Journey 1 Standard Purchase (Happy Path)**  
 `standard_user` logs in → browses catalog → opens product detail → adds 2+ items to cart → fills checkout form → confirms order → sees confirmation screen → resets to catalog.
 
-**Journey 2 — Locked Out User**  
+**Journey 2 Locked Out User**  
 `locked_out_user` attempts login → immediate UI error blocks catalog access. Verifies authentication error handling.
 
-**Journey 3 — Problem User (Bug Regression)**  
+**Journey 3 Problem User (Bug Regression)**  
 `problem_user` exposes pre-programmed bugs:
 - Add/remove cart behavior fails for items with specific ID parity
 - Subtotals double unexpectedly on the overview screen
 - "About" link returns HTTP 404
 - Cart does not reset after order completion
 
-**Journey 4 — Lateral Drawer Navigation**  
+**Journey 4 Lateral Drawer Navigation**  
 Side drawer allows access to: WebView, QR Code Scanner, GPS Map, Canvas Pad. Also exposes logout and global cart clear.
 
 ---
@@ -58,7 +58,7 @@ Side drawer allows access to: WebView, QR Code Scanner, GPS Map, Canvas Pad. Als
 
 ## 2. Testing Strategy
 
-### Test Level 1 — Unit Testing
+### Test Level 1 Unit Testing
 
 **Scope:** Pure business logic, isolated from UI and network.
 
@@ -71,7 +71,7 @@ Key test targets:
 
 ---
 
-### Test Level 2 — Integration Testing
+### Test Level 2 Integration Testing
 
 **Scope:** Module-to-module data exchange and navigation routing.
 
@@ -84,7 +84,7 @@ Key test targets:
 
 ---
 
-### Test Level 3 — Functional / End-to-End Testing
+### Test Level 3 Functional / End-to-End Testing
 
 
 Critical E2E flows executed on **both platforms** (iOS + Android):
@@ -105,7 +105,7 @@ Critical E2E flows executed on **both platforms** (iOS + Android):
 
 ---
 
-### Test Level 4 — Non-Functional Testing
+### Test Level 4 Non-Functional Testing
 
 #### Performance
 - Catalog must be interactive in < 2s on simulated 4G
@@ -170,10 +170,10 @@ Critical E2E flows executed on **both platforms** (iOS + Android):
 
 ## 6. QA Deliverables
 
-1. **Test Plan** — global strategic documentation covering web and mobile
-3. **Execution Summary Report** — pass/fail stats, screenshots, debug logs
-4. **Defect Tickets** — Jira logs with reproduction steps, actual vs expected, environment
-5. **QA Metrics Dashboard** — coverage trends, pass rates, flakiness tracking
+1. **Test Plan**  global strategic documentation covering web and mobile
+3. **Execution Summary Report** pass/fail stats, screenshots, debug logs
+4. **Defect Tickets** Jira logs with reproduction steps, actual vs expected, environment
+5. **QA Metrics Dashboard** coverage trends, pass rates, flakiness tracking
 
 ---
   });
