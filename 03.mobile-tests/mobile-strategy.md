@@ -19,7 +19,7 @@ The app implements a linear e-commerce checkout funnel in 7 phases:
 | 3 | **Product Detail** | Item details, add-to-cart / remove-from-cart, back navigation |
 | 4 | **Cart** | Selected items overview, line-item deletion, routing to Checkout or Catalog |
 | 5 | **Checkout Info** | Mandatory form (First Name, Last Name, Zip Code), client-side validation |
-| 6 | **Order Overview** | Financial summary: subtotal + 8% local tax calculation |
+| 6 | **Order Overview** | Financial summary: subtotal + local tax calculation |
 | 7 | **Confirmation** | Transaction success display, reset button → back to Catalog root |
 
 ---
