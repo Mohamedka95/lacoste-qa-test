@@ -1,5 +1,4 @@
 # Lacoste QA Technical Test
-### by Hamza BOUNAAMANE
 
 ---
 
