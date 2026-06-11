@@ -135,12 +135,12 @@ The strategy deliberately includes:
 | Unit Testing | Jest + React Native Testing Library |
 | CI/CD | GitHub Actions |
 | Defect Tracking | Jira |
-| TMS | TestRail / Zephyr Scale |
+| TMS | TestRail |
 
 ---
 
 ## 📄 Author
 
-**Hamza BOUNAAMANE**  
+**MohamedKADRI**  
 QA Engineer  
 *Lacoste Technical Test — June 2026*
